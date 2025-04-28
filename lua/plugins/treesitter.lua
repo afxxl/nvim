@@ -4,6 +4,8 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		opts = {
+			sync_install = false,
+			auto_install = true,
 			ensure_installed = {
 				"astro",
 				"cmake",
@@ -21,13 +23,10 @@ return {
 				"scss",
 				"sql",
 				"svelte",
+				"javascript",
+				"embedded_template",
 			},
 
-			-- matchup = {
-			-- 	enable = true,
-			-- },
-
-			-- https://github.com/nvim-treesitter/playground#query-linter
 			query_linter = {
 				enable = true,
 				use_virtual_text = true,
@@ -36,9 +35,8 @@ return {
 
 			playground = {
 				enable = true,
-				disable = {},
-				updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-				persist_queries = true, -- Whether the query persists across vim sessions
+				updatetime = 25,
+				persist_queries = true,
 				keybindings = {
 					toggle_query_editor = "o",
 					toggle_hl_groups = "i",
@@ -56,13 +54,19 @@ return {
 		config = function(_, opts)
 			require("nvim-treesitter.configs").setup(opts)
 
-			-- MDX
+			-- MDX Support
 			vim.filetype.add({
-				extension = {
-					mdx = "mdx",
-				},
+				extension = { mdx = "mdx" },
 			})
 			vim.treesitter.language.register("markdown", "mdx")
+
+			-- EJS Support
+			vim.filetype.add({
+				extension = { ejs = "ejs" },
+			})
+			vim.treesitter.language.register("html", "ejs")
+			vim.treesitter.language.register("javascript", "ejs")
+			vim.treesitter.language.register("embedded_template", "ejs")
 		end,
 	},
 }

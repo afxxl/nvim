@@ -64,6 +64,15 @@ keymap.set("n", "<C-w><right>", "<C-w>>")
 keymap.set("n", "<C-w><up>", "<C-w>+")
 keymap.set("n", "<C-w><down>", "<C-w>-")
 
+-- code runner
+keymap.set("n", "<leader>rr", ":RunCode<CR>", { noremap = true, silent = false })
+keymap.set("n", "<leader>rf", ":RunFile<CR>", { noremap = true, silent = false })
+keymap.set("n", "<leader>rft", ":RunFile tab<CR>", { noremap = true, silent = false })
+keymap.set("n", "<leader>rp", ":RunProject<CR>", { noremap = true, silent = false })
+keymap.set("n", "<leader>rc", ":RunClose<CR>", { noremap = true, silent = false })
+keymap.set("n", "<leader>crf", ":CRFiletype<CR>", { noremap = true, silent = false })
+keymap.set("n", "<leader>crp", ":CRProjects<CR>", { noremap = true, silent = false })
+
 --Extras
 -- Stay in indent mode
 keymap.set("v", "<", "<gv", opts)

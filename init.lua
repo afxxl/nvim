@@ -8,3 +8,8 @@ end
 vim.print = _G.dd
 
 require("config.lazy")
+
+-- Load Neovide GUI settings if Neovide is being used
+if vim.g.neovide then
+	require("config.neovide")
+end

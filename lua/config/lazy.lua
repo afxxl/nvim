@@ -18,20 +18,39 @@ require("lazy").setup({
 			"LazyVim/LazyVim",
 			import = "lazyvim.plugins",
 			opts = {
-				colorscheme = "solarized-osaka",
+				colorscheme = "tokyonight", -- Changed from solarized-osaka to tokyonight
 				news = {
 					lazyvim = true,
 					neovim = true,
 				},
 			},
 		},
+
 		{
 			"barrett-ruth/live-server.nvim",
 			build = "pnpm add -g live-server",
 			cmd = { "LiveServerStart", "LiveServerStop" },
 			config = true,
 		},
-		--emmet
+
+		-- chatGpt
+		{
+			"jackMort/ChatGPT.nvim",
+			event = "VeryLazy",
+			config = function()
+				require("chatgpt").setup({
+					api_key_cmd = "echo $OPENAI_API_KEY",
+				})
+			end,
+			dependencies = {
+				"MunifTanjim/nui.nvim",
+				"nvim-lua/plenary.nvim",
+				"folke/trouble.nvim", -- optional
+				"nvim-telescope/telescope.nvim",
+			},
+		},
+
+		-- emmet
 		{
 			"olrtg/nvim-emmet",
 			config = function()
@@ -56,7 +75,7 @@ require("lazy").setup({
 		-- { import = "lazyvim.plugins.extras.lang.markdown" },
 		{ import = "lazyvim.plugins.extras.lang.rust" },
 		{ import = "lazyvim.plugins.extras.lang.tailwind" },
-		{ import = "lazyvim.plugins.extras.coding.copilot" },
+		-- { import = "lazyvim.plugins.extras.coding.copilot" },
 		-- { import = "lazyvim.plugins.extras.dap.core" },
 		-- { import = "lazyvim.plugins.extras.vscode" },
 		{ import = "lazyvim.plugins.extras.util.mini-hipatterns" },

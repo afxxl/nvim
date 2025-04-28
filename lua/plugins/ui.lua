@@ -33,7 +33,6 @@ return {
 
 			opts.commands = {
 				all = {
-					-- options for the message history that you get with `:Noice`
 					view = "split",
 					opts = { enter = true, format = "details" },
 					filter = {},
@@ -57,6 +56,7 @@ return {
 		"rcarriga/nvim-notify",
 		opts = {
 			timeout = 5000,
+			background_colour = "#000000",
 		},
 	},
 
@@ -82,7 +82,6 @@ return {
 		opts = {
 			options = {
 				mode = "tabs",
-				-- separator_style = "slant",
 				show_buffer_close_icons = false,
 				show_close_icon = false,
 			},
@@ -92,16 +91,15 @@ return {
 	-- filename
 	{
 		"b0o/incline.nvim",
-		dependencies = { "craftzdog/solarized-osaka.nvim" },
+		dependencies = { "folke/tokyonight.nvim" },
 		event = "BufReadPre",
 		priority = 1200,
 		config = function()
-			local colors = require("solarized-osaka.colors").setup()
 			require("incline").setup({
 				highlight = {
 					groups = {
-						InclineNormal = { guibg = colors.magenta500, guifg = colors.base04 },
-						InclineNormalNC = { guifg = colors.violet500, guibg = colors.base03 },
+						InclineNormal = { guibg = "#6d829f", guifg = "#ffffff" },
+						InclineNormalNC = { guifg = "#8798b3", guibg = "none" },
 					},
 				},
 				window = { margin = { vertical = 0, horizontal = 1 } },
@@ -113,7 +111,6 @@ return {
 					if vim.bo[props.buf].modified then
 						filename = "[+] " .. filename
 					end
-
 					local icon, color = require("nvim-web-devicons").get_icon_color(filename)
 					return { { icon, guifg = color }, { " " }, { filename } }
 				end,
@@ -126,6 +123,11 @@ return {
 		"nvim-lualine/lualine.nvim",
 		opts = function(_, opts)
 			local LazyVim = require("lazyvim.util")
+			opts.options = {
+				theme = "tokyonight",
+				component_separators = { left = "", right = "" },
+				section_separators = { left = "", right = "" },
+			}
 			opts.sections.lualine_c[4] = {
 				LazyVim.lualine.pretty_path({
 					length = 0,
@@ -137,6 +139,25 @@ return {
 					readonly_icon = " 󰌾 ",
 				}),
 			}
+		end,
+	},
+
+	-- colorscheme
+	{
+		"folke/tokyonight.nvim",
+		lazy = false,
+		priority = 1000,
+		opts = {
+			style = "night",
+			transparent = true,
+			styles = {
+				sidebars = "transparent",
+				floats = "transparent",
+			},
+		},
+		config = function(_, opts)
+			require("tokyonight").setup(opts)
+			vim.cmd([[colorscheme tokyonight]])
 		end,
 	},
 
@@ -159,13 +180,12 @@ return {
 			dashboard = {
 				preset = {
 					header = [[
-	        ██████╗ ███████╗██╗   ██╗ █████╗ ███████╗██╗     ██╗███████╗███████╗
-	        ██╔══██╗██╔════╝██║   ██║██╔══██╗██╔════╝██║     ██║██╔════╝██╔════╝
-	        ██║  ██║█████╗  ██║   ██║███████║███████╗██║     ██║█████╗  █████╗
-	        ██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══██║╚════██║██║     ██║██╔══╝  ██╔══╝
-	        ██████╔╝███████╗ ╚████╔╝ ██║  ██║███████║███████╗██║██║     ███████╗
-	        ╚═════╝ ╚══════╝  ╚═══╝  ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝╚═╝     ╚══════╝
-   ]],
+ _     _____ _____  _ ____    ____  ____  ____  _____
+/ \   /  __//__ __\|// ___\  /   _\/  _ \/  _ \/  __/
+| |   |  \    / \    |    \  |  /  | / \|| | \||  \  
+| |_/\|  /_   | |    \___ |  |  \__| \_/|| |_/||  /_ 
+\____/\____\  \_/    \____/  \____/\____/\____/\____\
+          ]],
 				},
 			},
 		},

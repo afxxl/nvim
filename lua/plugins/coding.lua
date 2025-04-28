@@ -13,13 +13,16 @@ return {
 		},
 		opts = { snippet_engine = "luasnip" },
 	},
-
+	{ "catppuccin/nvim", name = "catppuccin", priority = 1000 },
 	-- Incremental rename
 	{
 		"smjonas/inc-rename.nvim",
 		cmd = "IncRename",
 		config = true,
 	},
+	{ "ellisonleao/gruvbox.nvim", priority = 1000, config = true },
+
+	{ "CRAG666/code_runner.nvim", config = true },
 
 	-- Refactoring tool
 	{
