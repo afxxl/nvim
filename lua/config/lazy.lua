@@ -5,7 +5,7 @@ if not vim.loop.fs_stat(lazypath) then
 		"clone",
 		"--filter=blob:none",
 		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
+		"--branch=stable",
 		lazypath,
 	})
 end
@@ -13,12 +13,12 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	spec = {
-		-- add LazyVim and import its plugins
+		-- LazyVim core
 		{
 			"LazyVim/LazyVim",
 			import = "lazyvim.plugins",
 			opts = {
-				colorscheme = "tokyonight", -- Changed from solarized-osaka to tokyonight
+				colorscheme = "tokyonight",
 				news = {
 					lazyvim = true,
 					neovim = true,
@@ -26,14 +26,17 @@ require("lazy").setup({
 			},
 		},
 
+		-- Live Server
 		{
 			"barrett-ruth/live-server.nvim",
 			build = "pnpm add -g live-server",
-			cmd = { "LiveServerStart", "LiveServerStop" },
-			config = true,
+			cmd = { "LiveServerStart", "LiveServerStop", "LiveServerToggle" },
+			opts = {
+				args = { "--port=5555" },
+			},
 		},
 
-		-- chatGpt
+		-- ChatGPT
 		{
 			"jackMort/ChatGPT.nvim",
 			event = "VeryLazy",
@@ -45,70 +48,130 @@ require("lazy").setup({
 			dependencies = {
 				"MunifTanjim/nui.nvim",
 				"nvim-lua/plenary.nvim",
-				"folke/trouble.nvim", -- optional
+				"folke/trouble.nvim",
 				"nvim-telescope/telescope.nvim",
 			},
 		},
 
-		-- emmet
+		-- Emmet (OPTIMIZED: Added lazy loading)
 		{
 			"olrtg/nvim-emmet",
+			ft = { "html", "css", "javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "svelte" },
 			config = function()
 				vim.keymap.set({ "n", "v" }, "<leader>xe", require("nvim-emmet").wrap_with_abbreviation)
 			end,
 		},
+
+		-- REMOVED: Duplicate render-markdown (it's already in avante.nvim dependencies)
+
+		-- Avante (Gemini) Plugin
 		{
-			"MeanderingProgrammer/render-markdown.nvim",
-			dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
-			-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-			-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
-			---@module 'render-markdown'
-			---@type render.md.UserConfig
-			opts = {},
+			"yetone/avante.nvim",
+			event = "VeryLazy",
+			version = false,
+			opts = {
+				provider = "gemini",
+
+				providers = {
+					gemini = {
+						model = "gemini-2.0-flash",
+						timeout = 30000,
+						temperature = 0,
+						max_tokens = 4096,
+					},
+					deepseek = {
+						__inherited_from = "openai",
+						api_key_name = "DEEPSEEK_API_KEY",
+						endpoint = "https://api.deepseek.com",
+						model = "deepseek-reasoner",
+						timeout = 30000,
+					},
+				},
+
+				behaviour = {
+					auto_suggestions = false,
+					auto_set_highlight_group = true,
+					auto_set_keymaps = true,
+					auto_apply_diff_after_generation = false,
+					support_paste_from_clipboard = false,
+				},
+			},
+
+			build = "make",
+
+			dependencies = {
+				"stevearc/dressing.nvim",
+				"nvim-lua/plenary.nvim",
+				"MunifTanjim/nui.nvim",
+				"nvim-mini/mini.pick",
+				"nvim-telescope/telescope.nvim",
+				"hrsh7th/nvim-cmp",
+				"ibhagwan/fzf-lua",
+				"nvim-tree/nvim-web-devicons",
+				"zbirenbaum/copilot.lua",
+				{
+					"HakonHarnes/img-clip.nvim",
+					event = "VeryLazy",
+					opts = {
+						default = {
+							embed_image_as_base64 = false,
+							prompt_for_file_name = false,
+							drag_and_drop = {
+								insert_mode = true,
+							},
+							use_absolute_path = true,
+						},
+					},
+				},
+				{
+					"MeanderingProgrammer/render-markdown.nvim",
+					opts = {
+						file_types = { "markdown", "Avante" },
+					},
+					ft = { "markdown", "Avante" },
+				},
+			},
 		},
 
-		-- import any extras modules here
+		-- LazyVim extras
 		{ import = "lazyvim.plugins.extras.linting.eslint" },
 		{ import = "lazyvim.plugins.extras.formatting.prettier" },
 		{ import = "lazyvim.plugins.extras.lang.typescript" },
 		{ import = "lazyvim.plugins.extras.lang.json" },
-		-- { import = "lazyvim.plugins.extras.lang.markdown" },
 		{ import = "lazyvim.plugins.extras.lang.rust" },
 		{ import = "lazyvim.plugins.extras.lang.tailwind" },
-		-- { import = "lazyvim.plugins.extras.coding.copilot" },
-		-- { import = "lazyvim.plugins.extras.dap.core" },
-		-- { import = "lazyvim.plugins.extras.vscode" },
 		{ import = "lazyvim.plugins.extras.util.mini-hipatterns" },
-		-- { import = "lazyvim.plugins.extras.test.core" },
-		-- { import = "lazyvim.plugins.extras.coding.yanky" },
-		-- { import = "lazyvim.plugins.extras.editor.mini-files" },
-		-- { import = "lazyvim.plugins.extras.util.project" },
 		{ import = "plugins" },
 	},
+
 	defaults = {
-		-- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
-		-- If you know what you're doing, you can set this to `true` to have all your custom plugins lazy-loaded by default.
 		lazy = false,
-		-- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
-		-- have outdated releases, which may break your Neovim install.
-		version = false, -- always use the latest git commit
-		-- version = "*", -- try installing the latest stable version for plugins that support semver
+		version = false,
 	},
+
+	install = {
+		missing = true,
+		colorscheme = { "tokyonight" },
+	},
+
 	dev = {
 		path = "~/.ghq/github.com",
 	},
-	checker = { enabled = true }, -- automatically check for plugin updates
+
+	checker = {
+		enabled = true,
+		frequency = 3600, -- ADDED: Check once per hour instead of constantly
+	},
+
 	performance = {
 		cache = {
 			enabled = true,
-			-- disable_events = {},
 		},
 		rtp = {
-			-- disable some rtp plugins
 			disabled_plugins = {
 				"gzip",
-				-- "matchit",
-				-- "matchparen",
+				"matchit",
+				"matchparen",
 				"netrwPlugin",
 				"rplugin",
 				"tarPlugin",
@@ -118,12 +181,12 @@ require("lazy").setup({
 			},
 		},
 	},
+
 	ui = {
-		custom_keys = {
-			["<localleader>d"] = function(plugin)
-				dd(plugin)
-			end,
-		},
+		-- REMOVED: custom_keys with dd() since debug.lua is deleted
+		border = "rounded",
+		backdrop = 60,
 	},
+
 	debug = false,
 })

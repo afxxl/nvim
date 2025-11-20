@@ -2,7 +2,9 @@ return {
 	-- messages, cmdline and the popupmenu
 	{
 		"folke/noice.nvim",
+		event = "VeryLazy",
 		opts = function(_, opts)
+			-- Skip unnecessary notifications
 			table.insert(opts.routes, {
 				filter = {
 					event = "notify",
@@ -10,6 +12,13 @@ return {
 				},
 				opts = { skip = true },
 			})
+
+			-- Skip search count messages for performance
+			table.insert(opts.routes, {
+				filter = { event = "msg_show", kind = "search_count" },
+				opts = { skip = true },
+			})
+
 			local focused = true
 			vim.api.nvim_create_autocmd("FocusGained", {
 				callback = function()
@@ -48,27 +57,35 @@ return {
 				end,
 			})
 
-			opts.presets.lsp_doc_border = true
+			-- PERFORMANCE: Simplified presets
+			opts.presets = {
+				bottom_search = false,
+				command_palette = false,
+				lsp_doc_border = true,
+				long_message_to_split = true,
+			}
 		end,
 	},
 
 	{
 		"rcarriga/nvim-notify",
 		opts = {
-			timeout = 5000,
+			timeout = 3000,
 			background_colour = "#000000",
+			max_width = 60,
+			max_height = 10,
+			render = "compact",
+			stages = "fade",
+			-- ADDED: Performance boost
+			fps = 30, -- Lower FPS for smoother on low-end
+			top_down = false, -- Notifications appear from bottom
 		},
 	},
 
-	-- animations
+	-- PERFORMANCE: Animations disabled
 	{
-		"echasnovski/mini.animate",
-		event = "VeryLazy",
-		opts = function(_, opts)
-			opts.scroll = {
-				enable = false,
-			}
-		end,
+		"nvim-mini/mini.animate",
+		enabled = false,
 	},
 
 	-- buffer line
@@ -84,6 +101,20 @@ return {
 				mode = "tabs",
 				show_buffer_close_icons = false,
 				show_close_icon = false,
+				separator_style = "thin",
+				always_show_bufferline = false,
+				-- ADDED: Performance improvements
+				indicator = {
+					style = "none", -- Simpler indicator
+				},
+				offsets = {
+					{
+						filetype = "neo-tree",
+						text = "File Explorer",
+						highlight = "Directory",
+						text_align = "center",
+					},
+				},
 			},
 		},
 	},
@@ -121,12 +152,19 @@ return {
 	-- statusline
 	{
 		"nvim-lualine/lualine.nvim",
+		event = "VeryLazy",
 		opts = function(_, opts)
 			local LazyVim = require("lazyvim.util")
 			opts.options = {
 				theme = "tokyonight",
-				component_separators = { left = "", right = "" },
-				section_separators = { left = "", right = "" },
+				component_separators = { left = "", right = "" },
+				section_separators = { left = "", right = "" },
+				globalstatus = true,
+				refresh = {
+					statusline = 100,
+					tabline = 100,
+					winbar = 100,
+				},
 			}
 			opts.sections.lualine_c[4] = {
 				LazyVim.lualine.pretty_path({
@@ -143,21 +181,70 @@ return {
 	},
 
 	-- colorscheme
+	-- {
+	-- 	"folke/tokyonight.nvim",
+	-- 	lazy = false,
+	-- 	priority = 1000,
+	-- 	opts = {
+	-- 		style = "night",
+	-- 		transparent = true,
+	-- 		terminal_colors = true,
+	-- 		styles = {
+	-- 			sidebars = "transparent",
+	-- 			floats = "transparent",
+	-- 			comments = { italic = true },
+	-- 			keywords = { italic = true },
+	-- 			functions = { bold = true },
+	-- 		},
+	-- 		on_colors = function(colors)
+	-- 			colors.bg = "#0f1117"
+	-- 			colors.hint = "#1abc9c"
+	-- 			colors.info = "#0db9d7"
+	-- 		end,
+	-- 		on_highlights = function(hl, c)
+	-- 			-- Make backgrounds more subtle
+	-- 			hl.CursorLine = { bg = c.bg_highlight }
+	-- 			hl.Visual = { bg = "#264f78" }
+	-- 		end,
+	-- 		cache = true,
+	-- 		dim_inactive = false,
+	-- 	},
+	-- 	config = function(_, opts)
+	-- 		require("tokyonight").setup(opts)
+	-- 		vim.cmd([[colorscheme tokyonight]])
+	-- 	end,
+	-- },
+
+	-- Kanagawa Theme
 	{
-		"folke/tokyonight.nvim",
+		"rebelot/kanagawa.nvim",
 		lazy = false,
 		priority = 1000,
 		opts = {
-			style = "night",
+			compile = false,
+			undercurl = true,
+			commentStyle = { italic = true },
+			functionStyle = { bold = true },
+			keywordStyle = { italic = true },
+			statementStyle = { bold = true },
+			typeStyle = {},
 			transparent = true,
-			styles = {
-				sidebars = "transparent",
-				floats = "transparent",
+			dimInactive = false,
+			terminalColors = true,
+			colors = {
+				theme = {
+					all = {
+						ui = {
+							bg_gutter = "none",
+						},
+					},
+				},
 			},
+			theme = "dragon", -- Load "wave" theme or "dragon" or "lotus"
 		},
 		config = function(_, opts)
-			require("tokyonight").setup(opts)
-			vim.cmd([[colorscheme tokyonight]])
+			require("kanagawa").setup(opts)
+			vim.cmd([[colorscheme kanagawa]])
 		end,
 	},
 
@@ -165,9 +252,17 @@ return {
 		"folke/zen-mode.nvim",
 		cmd = "ZenMode",
 		opts = {
+			window = {
+				width = 120,
+				options = {
+					number = false,
+					relativenumber = false,
+					signcolumn = "no",
+				},
+			},
 			plugins = {
-				gitsigns = true,
-				tmux = true,
+				gitsigns = { enabled = true },
+				tmux = { enabled = true },
 				kitty = { enabled = false, font = "+2" },
 			},
 		},
@@ -188,6 +283,22 @@ return {
           ]],
 				},
 			},
+			animate = {
+				enabled = false,
+			},
+		},
+	},
+	{
+		"karb94/neoscroll.nvim",
+		event = "VeryLazy",
+		opts = {
+			mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "zt", "zz", "zb" },
+			hide_cursor = true,
+			stop_eof = true,
+			respect_scrolloff = false,
+			cursor_scrolls_alone = true,
+			easing_function = "quadratic",
+			performance_mode = false,
 		},
 	},
 }

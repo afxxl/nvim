@@ -1,7 +1,7 @@
 return {
 	-- tools
 	{
-		"williamboman/mason.nvim",
+		"mason-org/mason.nvim",
 		opts = function(_, opts)
 			vim.list_extend(opts.ensure_installed, {
 				"stylua",
@@ -21,6 +21,15 @@ return {
 		"neovim/nvim-lspconfig",
 		opts = {
 			inlay_hints = { enabled = false },
+
+			diagnostics = {
+				update_in_insert = false,
+				virtual_text = {
+					spacing = 4,
+					prefix = "●",
+				},
+			},
+
 			---@type lspconfig.options
 			servers = {
 				cssls = {},
@@ -28,12 +37,37 @@ return {
 					root_dir = function(...)
 						return require("lspconfig.util").root_pattern(".git")(...)
 					end,
+					init_options = {
+						userLanguages = {
+							eelixir = "html-eex",
+							eruby = "erb",
+						},
+					},
+					settings = {
+						tailwindCSS = {
+							experimental = {
+								classRegex = {
+									"tw`([^`]*)",
+									'tw="([^"]*)',
+									'tw={"([^"}]*)',
+									"tw\\.\\w+`([^`]*)",
+									"tw\\(.*?\\)`([^`]*)",
+								},
+							},
+						},
+					},
 				},
 				tsserver = {
 					root_dir = function(...)
 						return require("lspconfig.util").root_pattern(".git")(...)
 					end,
 					single_file_support = false,
+					init_options = {
+						preferences = {
+							disableSuggestions = false,
+							importModuleSpecifierPreference = "relative",
+						},
+					},
 					settings = {
 						typescript = {
 							inlayHints = {
@@ -68,7 +102,6 @@ return {
 					},
 				},
 				lua_ls = {
-					-- enabled = false,
 					single_file_support = true,
 					settings = {
 						Lua = {
@@ -80,9 +113,7 @@ return {
 								callSnippet = "Both",
 							},
 							misc = {
-								parameters = {
-									-- "--log-level=trace",
-								},
+								parameters = {},
 							},
 							hint = {
 								enable = true,
@@ -100,7 +131,6 @@ return {
 							},
 							diagnostics = {
 								disable = { "incomplete-signature-doc", "trailing-space" },
-								-- enable = false,
 								groupSeverity = {
 									strong = "Warning",
 									strict = "Warning",
@@ -129,6 +159,26 @@ return {
 									continuation_indent_size = "2",
 								},
 							},
+							runtime = {
+								version = "LuaJIT",
+							},
+							telemetry = {
+								enable = false,
+							},
+						},
+					},
+				},
+
+				-- FIXED: Custom keybinding for all servers
+				["*"] = {
+					keys = {
+						{
+							"gd",
+							function()
+								require("telescope.builtin").lsp_definitions({ reuse_win = false })
+							end,
+							desc = "Goto Definition",
+							has = "definition",
 						},
 					},
 				},
@@ -136,21 +186,19 @@ return {
 			setup = {},
 		},
 	},
+
+	-- Better code actions menu
 	{
-		"neovim/nvim-lspconfig",
-		opts = function()
-			local keys = require("lazyvim.plugins.lsp.keymaps").get()
-			vim.list_extend(keys, {
-				{
-					"gd",
-					function()
-						-- DO NOT RESUSE WINDOW
-						require("telescope.builtin").lsp_definitions({ reuse_win = false })
-					end,
-					desc = "Goto Definition",
-					has = "definition",
-				},
-			})
-		end,
+		"aznhe21/actions-preview.nvim",
+		event = "LspAttach",
+		keys = {
+			{
+				"<leader>ca",
+				function()
+					require("actions-preview").code_actions()
+				end,
+				desc = "Code Actions (Preview)",
+			},
+		},
 	},
 }

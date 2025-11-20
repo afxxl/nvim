@@ -1,5 +1,5 @@
 return {
-	-- Create annotations with one keybind, and jump your cursor in the inserted annotation
+	-- Create annotations with one keybind
 	{
 		"danymat/neogen",
 		keys = {
@@ -13,16 +13,20 @@ return {
 		},
 		opts = { snippet_engine = "luasnip" },
 	},
-	{ "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+
 	-- Incremental rename
 	{
 		"smjonas/inc-rename.nvim",
 		cmd = "IncRename",
 		config = true,
 	},
-	{ "ellisonleao/gruvbox.nvim", priority = 1000, config = true },
 
-	{ "CRAG666/code_runner.nvim", config = true },
+	-- Code runner (now lazy loaded)
+	{
+		"CRAG666/code_runner.nvim",
+		cmd = { "RunCode", "RunFile", "RunProject", "RunClose", "CRFiletype", "CRProjects" },
+		config = true,
+	},
 
 	-- Refactoring tool
 	{
@@ -44,7 +48,7 @@ return {
 
 	-- Go forward/backward with square brackets
 	{
-		"echasnovski/mini.bracketed",
+		"nvim-mini/mini.bracketed",
 		event = "BufReadPost",
 		config = function()
 			local bracketed = require("mini.bracketed")
@@ -58,14 +62,20 @@ return {
 		end,
 	},
 
-	-- Better increase/descrease
+	-- Windsurf (optimized)
+	{
+		"Exafunction/windsurf.vim",
+		event = "VeryLazy",
+	},
+
+	-- Better increase/decrease
 	{
 		"monaqa/dial.nvim",
-    -- stylua: ignore
-    keys = {
-      { "<C-a>", function() return require("dial.map").inc_normal() end, expr = true, desc = "Increment" },
-      { "<C-x>", function() return require("dial.map").dec_normal() end, expr = true, desc = "Decrement" },
-    },
+		-- stylua: ignore
+		keys = {
+			{ "<C-a>", function() return require("dial.map").inc_normal() end, expr = true, desc = "Increment" },
+			{ "<C-x>", function() return require("dial.map").dec_normal() end, expr = true, desc = "Decrement" },
+		},
 		config = function()
 			local augend = require("dial.augend")
 			require("dial.config").augends:register_group({
@@ -81,12 +91,25 @@ return {
 		end,
 	},
 
+	-- Symbols outline
 	{
 		"simrat39/symbols-outline.nvim",
 		keys = { { "<leader>cs", "<cmd>SymbolsOutline<cr>", desc = "Symbols Outline" } },
 		cmd = "SymbolsOutline",
 		opts = {
 			position = "right",
+		},
+	},
+
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		opts = {
+			check_ts = true, -- Use treesitter
+			ts_config = {
+				lua = { "string" },
+				javascript = { "template_string" },
+			},
 		},
 	},
 }

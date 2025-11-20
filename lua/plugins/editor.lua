@@ -1,6 +1,5 @@
 return {
 	{
-		enabled = true,
 		"folke/flash.nvim",
 		---@type Flash.Config
 		opts = {
@@ -14,14 +13,14 @@ return {
 	},
 
 	{
-		"echasnovski/mini.hipatterns",
+		"nvim-mini/mini.hipatterns",
 		event = "BufReadPre",
 		opts = {
 			highlighters = {
 				hsl_color = {
 					pattern = "hsl%(%d+,? %d+%%?,? %d+%%?%)",
 					group = function(_, match)
-						local utils = require("solarized-osaka.hsl")
+						local utils = require("craftzdog.hsl") -- FIXED: Changed from solarized-osaka.hsl
 						--- @type string, string, string
 						local nh, ns, nl = match:match("hsl%((%d+),? (%d+)%%?,? (%d+)%%?%)")
 						--- @type number?, number?, number?
@@ -37,12 +36,13 @@ return {
 
 	{
 		"dinhhuy258/git.nvim",
-		event = "BufReadPre",
+		keys = {
+			{ "<Leader>gb", desc = "Git blame" },
+			{ "<Leader>go", desc = "Git browse" },
+		},
 		opts = {
 			keymaps = {
-				-- Open blame window
 				blame = "<Leader>gb",
-				-- Open file/folder in git repository
 				browse = "<Leader>go",
 			},
 		},
@@ -58,7 +58,6 @@ return {
 			"nvim-telescope/telescope-file-browser.nvim",
 		},
 		keys = {
-
 			{
 				"<leader>fP",
 				function()
@@ -157,7 +156,7 @@ return {
 			local actions = require("telescope.actions")
 			local fb_actions = require("telescope").extensions.file_browser.actions
 
-			opts.defaults = vim.tbl_deep_extend("force", opts.defaults, {
+			opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
 				wrap_results = true,
 				layout_strategy = "horizontal",
 				layout_config = { prompt_position = "top" },
@@ -179,12 +178,9 @@ return {
 			opts.extensions = {
 				file_browser = {
 					theme = "dropdown",
-					-- disables netrw and use telescope-file-browser in its place
 					hijack_netrw = true,
 					mappings = {
-						-- your custom insert mode mappings
 						["n"] = {
-							-- your custom normal mode mappings
 							["N"] = fb_actions.create,
 							["h"] = fb_actions.goto_parent_dir,
 							["/"] = function()
@@ -210,5 +206,122 @@ return {
 			require("telescope").load_extension("fzf")
 			require("telescope").load_extension("file_browser")
 		end,
+	},
+
+	-- Better file jumping with marks
+	{
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		keys = {
+			{
+				"<leader>ha",
+				function()
+					require("harpoon"):list():add()
+				end,
+				desc = "Harpoon: Add file",
+			},
+			{
+				"<leader>hh",
+				function()
+					local harpoon = require("harpoon")
+					harpoon.ui:toggle_quick_menu(harpoon:list())
+				end,
+				desc = "Harpoon: Quick menu",
+			},
+			{
+				"<leader>1",
+				function()
+					require("harpoon"):list():select(1)
+				end,
+				desc = "Harpoon: File 1",
+			},
+			{
+				"<leader>2",
+				function()
+					require("harpoon"):list():select(2)
+				end,
+				desc = "Harpoon: File 2",
+			},
+			{
+				"<leader>3",
+				function()
+					require("harpoon"):list():select(3)
+				end,
+				desc = "Harpoon: File 3",
+			},
+			{
+				"<leader>4",
+				function()
+					require("harpoon"):list():select(4)
+				end,
+				desc = "Harpoon: File 4",
+			},
+		},
+	},
+
+	-- Better search and replace
+	{
+		"nvim-pack/nvim-spectre",
+		cmd = "Spectre",
+		keys = {
+			{
+				"<leader>sr",
+				function()
+					require("spectre").open()
+				end,
+				desc = "Search & Replace (Spectre)",
+			},
+		},
+		opts = {},
+	},
+
+	-- Git blame in current line
+	{
+		"f-person/git-blame.nvim",
+		event = "BufReadPre",
+		opts = {
+			enabled = false, -- Disabled by default, toggle with :GitBlameToggle
+			message_template = " <author> • <date> • <summary>",
+			date_format = "%r",
+		},
+	},
+
+	-- Project TODO finder
+	{
+		"folke/todo-comments.nvim",
+		event = "BufReadPost",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		keys = {
+			{
+				"]t",
+				function()
+					require("todo-comments").jump_next()
+				end,
+				desc = "Next TODO",
+			},
+			{
+				"[t",
+				function()
+					require("todo-comments").jump_prev()
+				end,
+				desc = "Previous TODO",
+			},
+			{
+				"<leader>st",
+				"<cmd>TodoTelescope<cr>",
+				desc = "Search TODOs",
+			},
+		},
+		opts = {},
+	},
+
+	-- Undo tree
+	{
+		"mbbill/undotree",
+		cmd = "UndotreeToggle",
+		keys = {
+			{ "<leader>u", "<cmd>UndotreeToggle<cr>", desc = "Undo Tree" },
+		},
 	},
 }

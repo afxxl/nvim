@@ -58,6 +58,9 @@ keymap.set("n", "sj", "<C-w>j")
 keymap.set("n", "sl", "<C-w>l")
 keymap.set("n", "sx", "<cmd>close<CR>", { desc = "Close current split" })
 
+-- Lua config (e.g. in init.lua)
+keymap.set("n", "<leader>yf", ":yaf<CR>", { silent = true })
+
 -- Resize window
 keymap.set("n", "<C-w><left>", "<C-w><")
 keymap.set("n", "<C-w><right>", "<C-w>>")
@@ -97,10 +100,7 @@ keymap.set("n", "<C-j>", function()
 	vim.diagnostic.goto_next()
 end, opts)
 
-keymap.set("n", "<leader>r", function()
-	require("craftzdog.hsl").replaceHexWithHSL()
-end)
-
-keymap.set("n", "<leader>i", function()
-	require("craftzdog.lsp").toggleInlayHints()
-end)
+-- Theme picker command
+keymap.set("n", "<leader>th", function()
+	vim.cmd("Telescope colorscheme")
+end, { desc = "Choose theme (saves automatically)" })
