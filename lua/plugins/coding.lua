@@ -62,10 +62,40 @@ return {
 		end,
 	},
 
-	-- Windsurf (optimized)
+	-- Windsurf with custom keybindings
 	{
 		"Exafunction/windsurf.vim",
-		event = "VeryLazy",
+		event = "InsertEnter",
+		config = function()
+			-- Enable Windsurf/Codeium
+			vim.g.codeium_enabled = true
+			vim.g.codeium_disable_bindings = 0
+
+			-- Custom keybindings using Codeium functions
+			vim.keymap.set("i", "<Tab>", function()
+				if vim.fn["codeium#Accept"]() ~= "" then
+					return vim.fn["codeium#Accept"]()
+				else
+					return "<Tab>"
+				end
+			end, { expr = true, silent = true, desc = "Accept Windsurf suggestion or Tab" })
+
+			vim.keymap.set("i", "<C-g>", function()
+				return vim.fn["codeium#Accept"]()
+			end, { expr = true, silent = true, desc = "Accept Windsurf suggestion" })
+
+			vim.keymap.set("i", "<C-;>", function()
+				return vim.fn["codeium#CycleCompletions"](1)
+			end, { expr = true, silent = true, desc = "Next suggestion" })
+
+			vim.keymap.set("i", "<C-,>", function()
+				return vim.fn["codeium#CycleCompletions"](-1)
+			end, { expr = true, silent = true, desc = "Previous suggestion" })
+
+			vim.keymap.set("i", "<C-x>", function()
+				return vim.fn["codeium#Clear"]()
+			end, { expr = true, silent = true, desc = "Clear suggestion" })
+		end,
 	},
 
 	-- Better increase/decrease
