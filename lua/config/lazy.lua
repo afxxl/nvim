@@ -74,10 +74,10 @@ require("lazy").setup({
 
 				providers = {
 					gemini = {
-						model = "gemini-2.0-flash",
+						model = "gemini-2.5-flash", -- This is the correct GA model ID
 						timeout = 30000,
 						temperature = 0,
-						max_tokens = 4096,
+						max_tokens = 8192,
 					},
 					deepseek = {
 						__inherited_from = "openai",

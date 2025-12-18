@@ -292,13 +292,78 @@ return {
 		"karb94/neoscroll.nvim",
 		event = "VeryLazy",
 		opts = {
-			mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "zt", "zz", "zb" },
+			-- Smooth scrolling mappings
+			mappings = {
+				"<C-u>",
+				"<C-d>",
+				"<C-b>",
+				"<C-f>",
+				"<C-y>",
+				"<C-e>",
+				"zt",
+				"zz",
+				"zb",
+			},
 			hide_cursor = true,
 			stop_eof = true,
 			respect_scrolloff = false,
 			cursor_scrolls_alone = true,
-			easing_function = "quadratic",
-			performance_mode = false,
+
+			-- SMOOTHER EASING FUNCTION
+			easing_function = "sine", -- Changed from "quadratic"
+
+			-- PERFORMANCE MODE
+			performance_mode = false, -- Keep animations
+
+			-- FASTER, SMOOTHER DURATION (key change!)
+			duration_multiplier = 0.5, -- Lower = faster = less stutter
 		},
+		config = function(_, opts)
+			require("neoscroll").setup(opts)
+
+			-- Custom smooth scroll speeds for each command
+			local neoscroll = require("neoscroll")
+			local keymap = {
+				-- Half page scrolling (smooth)
+				["<C-u>"] = function()
+					neoscroll.ctrl_u({ duration = 150 })
+				end,
+				["<C-d>"] = function()
+					neoscroll.ctrl_d({ duration = 150 })
+				end,
+
+				-- Full page scrolling (faster)
+				["<C-b>"] = function()
+					neoscroll.ctrl_b({ duration = 200 })
+				end,
+				["<C-f>"] = function()
+					neoscroll.ctrl_f({ duration = 200 })
+				end,
+
+				-- Line scrolling (very smooth)
+				["<C-y>"] = function()
+					neoscroll.scroll(-0.1, { move_cursor = false, duration = 50 })
+				end,
+				["<C-e>"] = function()
+					neoscroll.scroll(0.1, { move_cursor = false, duration = 50 })
+				end,
+
+				-- Centering commands (instant)
+				["zt"] = function()
+					neoscroll.zt({ half_win_duration = 100 })
+				end,
+				["zz"] = function()
+					neoscroll.zz({ half_win_duration = 100 })
+				end,
+				["zb"] = function()
+					neoscroll.zb({ half_win_duration = 100 })
+				end,
+			}
+
+			local modes = { "n", "v", "x" }
+			for key, func in pairs(keymap) do
+				vim.keymap.set(modes, key, func)
+			end
+		end,
 	},
 }
