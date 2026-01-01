@@ -19,7 +19,6 @@ return {
 	-- Add this config section for better integration
 	config = function()
 		-- Floating window settings
-		vim.g.lazygit_floating_window_winblend = 0 -- No transparency for better readability
 		vim.g.lazygit_floating_window_scaling_factor = 0.9 -- 90% of screen size
 		vim.g.lazygit_floating_window_use_plenary = 1 -- Use plenary for better window management
 

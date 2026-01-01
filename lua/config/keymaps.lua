@@ -74,6 +74,11 @@ keymap.set("n", "<leader>rc", ":RunClose<CR>", { noremap = true, silent = false,
 keymap.set("n", "<leader>crf", ":CRFiletype<CR>", { noremap = true, silent = false, desc = "Runner filetype" })
 keymap.set("n", "<leader>crp", ":CRProjects<CR>", { noremap = true, silent = false, desc = "Runner projects" })
 
+-- REST API Testing
+keymap.set("n", "<leader>rh", "<cmd>Rest run<cr>", { desc = "Run HTTP request" })
+keymap.set("n", "<leader>rl", "<cmd>Rest run last<cr>", { desc = "Re-run last" })
+keymap.set("n", "<leader>re", "<cmd>Rest env select<cr>", { desc = "Select env" })
+
 -- Extras
 keymap.set("v", "<", "<gv", opts)
 keymap.set("v", ">", ">gv", opts)

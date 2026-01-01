@@ -14,6 +14,14 @@ return {
 		opts = { snippet_engine = "luasnip" },
 	},
 
+	-- eslint
+	{
+		"esmuellert/nvim-eslint",
+		config = function()
+			require("nvim-eslint").setup({})
+		end,
+	},
+
 	-- Incremental rename
 	{
 		"smjonas/inc-rename.nvim",
@@ -140,6 +148,17 @@ return {
 				lua = { "string" },
 				javascript = { "template_string" },
 			},
+		},
+	},
+	--testing
+	{
+		"rest-nvim/rest.nvim",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			opts = function(_, opts)
+				opts.ensure_installed = opts.ensure_installed or {}
+				table.insert(opts.ensure_installed, "http")
+			end,
 		},
 	},
 }
