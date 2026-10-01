@@ -163,3 +163,7 @@ keymap.set("n", "<leader>fR", function()
 		})
 	end
 end, { desc = "Find Files (project root)" })
+
+-- Molten Jupyter Output Management
+keymap.set("n", "<leader>mo", "<cmd>MoltenEnterOutput<CR>", { desc = "Enter Molten Output", silent = true })
+keymap.set("n", "<leader>ms", "<cmd>MoltenShowOutput<CR>", { desc = "Show Molten Output", silent = true })

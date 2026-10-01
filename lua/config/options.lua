@@ -86,3 +86,9 @@ vim.cmd([[au BufNewFile,BufRead *.astro setf astro]])
 vim.cmd([[au BufNewFile,BufRead Podfile setf ruby]])
 
 -- REMOVED: Conditional cmdheight (already set to 0 above)
+
+-- Tells Neovim to use our specific data science sandbox for Python plugins
+vim.g.python3_host_prog = vim.fn.expand("~/.virtualenvs/neovim-ds/bin/python")
+
+-- allow remote plugins
+vim.g.loaded_remote_plugins = nil

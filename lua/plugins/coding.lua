@@ -14,6 +14,90 @@ return {
 		opts = { snippet_engine = "luasnip" },
 	},
 
+	--jupytext.vim
+
+	{
+		"goerz/jupytext.vim",
+		config = function()
+			-- Tells Jupytext to format the file as a Python script with # %% cell markers
+			vim.g.jupytext_fmt = "py:percent"
+		end,
+	},
+	-- porper render
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-tree/nvim-web-devicons",
+		},
+		opts = {
+			-- This ensures it draws nice background boxes around code cells
+			code = {
+				sign = false,
+				width = "block",
+				right_pad = 1,
+			},
+			heading = {
+				sign = false,
+				icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+			},
+		},
+	},
+	{
+		"nvim-mini/mini.hipatterns", -- Updated repository name
+		config = function()
+			local hipatterns = require("mini.hipatterns")
+			hipatterns.setup({
+				highlighters = {
+					-- This turns "# %%" into a prominent visual divider line
+					cell_separator = {
+						pattern = "^# %%%%.-$",
+						group = "DiffAdd", -- Try "DiffAdd", "CursorLine", or "Error" for different background colors
+					},
+				},
+			})
+		end,
+	},
+
+	--notebookNavigator
+	{
+		"GCBallesteros/NotebookNavigator.nvim",
+		keys = {
+			{
+				"]h",
+				function()
+					require("notebook-navigator").move_cell("d")
+				end,
+				desc = "Next cell",
+			},
+			{
+				"[h",
+				function()
+					require("notebook-navigator").move_cell("u")
+				end,
+				desc = "Previous cell",
+			},
+			-- CHANGED: Use <leader>mc (Molten Cell) and <leader>mn (Molten Next)
+			{ "<leader>mc", "<cmd>lua require('notebook-navigator').run_cell()<cr>", desc = "Run cell" },
+			{
+				"<leader>mn",
+				"<cmd>lua require('notebook-navigator').run_and_move()<cr>",
+				desc = "Run cell and move down",
+			},
+		},
+		dependencies = {
+			"nvim-mini/mini.comment",
+			"hkupty/iron.nvim", -- fallback dependency
+			"akinsho/toggleterm.nvim", -- fallback dependency
+		},
+		config = function()
+			local nn = require("notebook-navigator")
+			nn.setup({
+				activate_extmark_fallback = true,
+				repl_provider = "molten", -- Tells NotebookNavigator to route execution through Molten
+			})
+		end,
+	},
 	-- eslint
 	{
 		"esmuellert/nvim-eslint",
